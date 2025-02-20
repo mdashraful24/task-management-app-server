@@ -275,11 +275,10 @@ async function run() {
         app.post('/tasks', async (req, res) => {
             const task = req.body;
 
-            // Add createdAt field and category (if not provided)
             const taskWithCreatedAt = {
                 ...task,
-                createdAt: new Date(),  // Set createdAt to current date and time
-                category: task.category || 'To-Do'  // Default category is 'To-Do'
+                createdAt: new Date(),
+                category: task.category || 'To-Do'
             };
 
             const result = await taskCollection.insertOne(taskWithCreatedAt);
