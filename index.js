@@ -220,7 +220,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
         const userCollection = client.db("taskManagementDB").collection("users");
         const taskCollection = client.db("taskManagementDB").collection("tasks");
@@ -267,18 +267,22 @@ async function run() {
         })
 
         // **Tasks Related APIs**
-        app.get('/tasks', async (req, res) => {
-            const tasks = await taskCollection.find().toArray();
+        app.get('/tasks/:email', async (req, res) => {
+            const query = { email: req.params.email }
+            const tasks = await taskCollection.find(query).toArray();
             res.send(tasks);
         });
 
         app.post('/tasks', async (req, res) => {
-            const task = req.body;
+            const { title, description, category, email } = req.body;
 
+            // Ensure the task includes the user's email
             const taskWithCreatedAt = {
-                ...task,
+                title,
+                description,
+                category: category, // Default category is 'To-Do'
+                email, // Add email to the task data
                 createdAt: new Date(),
-                category: task.category || 'To-Do'
             };
 
             const result = await taskCollection.insertOne(taskWithCreatedAt);
@@ -311,7 +315,7 @@ async function run() {
 
 
         // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
+        // await client.db("admin").command({ ping: 1 });
         // console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
