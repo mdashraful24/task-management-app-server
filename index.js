@@ -28,6 +28,7 @@ async function run() {
 
         const userCollection = client.db("taskManagementDB").collection("users");
         const taskCollection = client.db("taskManagementDB").collection("tasks");
+        const activityLogCollection = client.db("taskManagementDB").collection("activityLogs");
 
         // users related api's
         app.get('/users', async (req, res) => {
@@ -119,6 +120,45 @@ async function run() {
             const result = await taskCollection.deleteOne(query);
             res.send(result);
         });
+
+        // GET Route for fetching logs by email
+        app.get('/activity-logs/:email', async (req, res) => {
+            const query = { email: req.params.email };
+            try {
+                const logs = await activityLogCollection.find(query).toArray();
+                res.send(logs);
+            } catch (error) {
+                console.error("Error fetching logs:", error);
+                res.status(500).send({ message: "Error fetching logs from database" });
+            }
+        });
+
+        // POST Route for saving logs
+        app.post('/activity-logs', async (req, res) => {
+            console.log(req.body);
+            const { message, timestamp, email } = req.body;
+
+            if (!message || !timestamp || !email) {
+                return res.status(400).send({ message: "Missing required fields" });
+            }
+
+            const logData = {
+                message,
+                timestamp: new Date(timestamp),
+                email,
+                createdAt: new Date(),
+            };
+
+            try {
+                const result = await activityLogCollection.insertOne(logData);
+                res.send(result); // Respond with the inserted log result
+            } catch (error) {
+                console.error("Error inserting log:", error);
+                res.status(500).send({ message: "Error inserting log into database" });
+            }
+        });
+
+
 
 
         // Send a ping to confirm a successful connection
