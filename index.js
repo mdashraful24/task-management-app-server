@@ -81,12 +81,11 @@ async function run() {
         app.post('/tasks', async (req, res) => {
             const { title, description, category, email } = req.body;
 
-            // Ensure the task includes the user's email
             const taskWithCreatedAt = {
                 title,
                 description,
-                category: category, // Default category is 'To-Do'
-                email, // Add email to the task data
+                category: category,
+                email,
                 createdAt: new Date(),
             };
 
@@ -107,7 +106,7 @@ async function run() {
             const id = req.params.id;
             const updatedDoc = {
                 ...req.body,
-                updatedAt: new Date() // Add the current timestamp
+                updatedAt: new Date()
             };
             const filter = { _id: new ObjectId(id) };
             const result = await taskCollection.updateOne(filter, { $set: updatedDoc });
@@ -151,15 +150,12 @@ async function run() {
 
             try {
                 const result = await activityLogCollection.insertOne(logData);
-                res.send(result); // Respond with the inserted log result
+                res.send(result);
             } catch (error) {
                 console.error("Error inserting log:", error);
                 res.status(500).send({ message: "Error inserting log into database" });
             }
         });
-
-
-
 
         // Send a ping to confirm a successful connection
         // await client.db("admin").command({ ping: 1 });
