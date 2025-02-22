@@ -1,7 +1,3 @@
-Great! I'll update the `README.md` file to reflect that you're using MongoDB Atlas.
-
-Here is the updated `README.md`:
-
 # Task Management Application
 
 ## Short Description
